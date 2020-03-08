@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 public class Ex1 {
-
 
     private Path path;
 
@@ -19,6 +22,18 @@ public class Ex1 {
     @AfterClass(alwaysRun = true)
     public void deleteTempDirectory() throws IOException {
         Files.delete(path);
+    }
+
+    @Test(groups = {"positive"}, dataProvider = "namesProvider")
+    public void createFileWithDataProviderNames(String name) throws IOException {
+        File file = new File(path + name);
+        Assert.assertTrue(file.createNewFile());
+    }
+
+    @Test(groups = {"positive"}, dataProviderClass = DataProviderFromCSVFile.class, dataProvider = "dataProviderFromCSVFile")
+    public void createFileWithDataProviderNamesFromFile(String name) throws IOException {
+        File file = new File(path + name);
+        Assert.assertTrue(file.createNewFile());
     }
 
     @Test(groups = {"positive"})
@@ -44,5 +59,14 @@ public class Ex1 {
         File file = new File(path + "");
         Assert.assertFalse(file.createNewFile());
 
+    }
+
+    @DataProvider
+    public Iterator<Object> namesProvider() {
+        List<Object> names = new ArrayList<>();
+        for (int i=1; i < 10; i++){
+            names.add("name" + i);
+        }
+        return names.iterator();
     }
 }
